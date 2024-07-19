@@ -1,0 +1,47 @@
+When I try to open in browser or run UserTests.php in the command line the first time it works, but if I try two times I see this error in the PHP logs:
+
+PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'testuser1@test.com' for key 'email' in /Applications/XAMPP/xamppfiles/htdocs/TaskMinder/php/User.php:40
+Stack trace:
+#0 /Applications/XAMPP/xamppfiles/htdocs/TaskMinder/php/User.php(40): PDOStatement->execute()
+#1 /Applications/XAMPP/xamppfiles/htdocs/taskminder/tests/UserTests.php(12): User->createAccount('Test User1', 'testuser1@test....', 'password123')
+#2 /Applications/XAMPP/xamppfiles/htdocs/taskminder/tests/UserTests.php(74): testCreateAccount()
+#3 {main}
+  thrown in /Applications/XAMPP/xamppfiles/htdocs/TaskMinder/php/User.php on line 40
+
+This error is ocuring because the email should be unique to each user, so when I try to create an account with a user name that already exists in the DB I get a constraint violation.
+The fix for this is to add a validation check in my User->createAccount() method to check if the email exists before creating a new account. 
+
+Code needed to be uncommented after performing UserTests.php
+Check if user already exists in the DB
+$query = "SELECT COUNT(*) as count from " . $this->table_name . " WHERE email=:email";
+$stmt = $this->connection->prepare($query);
+$stmt->bindParam(':email', $email);
+$stmt->execute();
+$row = $stmt->fetch(PDO::FETCH_ASSOC);
+if ($row['count'] > 0) {
+echo "Error: A user with this email already exists\n";
+return false;
+} 
+
+
+Next error is coming from the function testLoginCorrectCredentials() test. The user-> login() method is throwing this error
+
+PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /Applications/XAMPP/xamppfiles/htdocs/TaskMinder/php/User.php on line 83
+
+This is because the login() method starts a session without checking to see if a session already exists. The fix is to check if a session is started before starting a new session.
+
+Code needed to be uncommented after performing UserTests.php
+Check if session is already started before starting a session
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+The next error is coming from the testLogOut() function. This is the error
+
+PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /Applications/XAMPP/xamppfiles/htdocs/TaskMinder/php/User.php on line 102
+
+Similar to the login error I shold check if the session is started before starting a session
+Check if session is already started before starting a session
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}

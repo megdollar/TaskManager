@@ -1,0 +1,63 @@
+
+
+
+        <header>
+
+            <div class="brand">
+                <div class="logo">
+                    <h1 class="fas fa-solid fa-check" ></h1>
+                </div>
+                <h1 class="blue-class">Task</h1>
+                <h1 class="orange-class">Minder</h1>
+
+            </div>
+
+            <span class="fas fa-solid fa-bars" id="menuIcon" onclick="toggle()"></span>
+
+            <div class="navbar" id="nav">
+
+                
+                <ul class="header-ul">
+                    <li><span class="fas  fa-home headIcon"> </span>
+                        <a href="index.php">Home</a>
+                    </li>
+
+                    <li><span class="fas fa-solid fa-user headIcon"></span>
+                        <a href="editAccount.php">Profile</a>
+                    </li>
+
+                    <li><span class="fas fa-solid fa-clipboard headIcon"></span>
+                        <a href="dashboard.php">Dashboard</a>
+                    </li>
+
+                    <li><span class="fas fa-solid fa-list-check headIcon"></span>
+                        <a href="editTask.php">Task Editor</a>
+                    </li>
+
+
+                    <li><span class=" fas fa-solid fa-lock headIcon"></span>
+                        <a href="" id="logoutButton">Sign Out</a>
+                    </li>
+
+                </ul>
+            </div>
+
+            </div>
+        </header>
+
+        <script>
+            const toggle = () => {
+                document.getElementById('nav').classList.toggle('navactive')
+            };
+            $('#logoutButton').click(function() {
+                $.ajax({
+                    url: '../php/account_handler.php',
+                    type: 'POST',
+                    data: { action: 'logout' },
+                    success: function(response) {
+                        window.location.href = 'index.php';
+                    }
+                });
+            });
+      
+        </script>
